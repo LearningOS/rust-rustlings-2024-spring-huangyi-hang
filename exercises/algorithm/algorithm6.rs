@@ -22,8 +22,20 @@ impl Graph {
         self.adj[dest].push(src); 
     }
 
+    // last in first out
+    // push_front pop_front
     fn dfs_util(&self, v: usize, visited: &mut HashSet<usize>, visit_order: &mut Vec<usize>) {
-        //TODO
+        if !visited.contains(&v) {
+            visit_order.push(v);
+            visited.insert(v);
+        } 
+        for i in &self.adj[v] {
+            if !visited.contains(i) {
+                visit_order.push(*i);
+                visited.insert(*i);
+                self.dfs_util(*i, visited, visit_order);
+            }
+        }
     }
 
     // Perform a depth-first search on the graph, return the order of visited nodes
@@ -45,7 +57,9 @@ mod tests {
         graph.add_edge(0, 1);
         graph.add_edge(1, 2);
 
+        print!("hello");
         let visit_order = graph.dfs(0);
+
         assert_eq!(visit_order, vec![0, 1, 2]);
     }
 

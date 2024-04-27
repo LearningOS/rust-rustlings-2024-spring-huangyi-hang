@@ -5,8 +5,17 @@
 */
 // I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T: std::cmp::PartialOrd + Copy>(array: &mut [T]){
+    for i in (0..array.len()).rev() {
+        for j in 0..i {
+            if array[j] > array[j + 1] {
+                let tem = array[j];
+                array[j] = array[j + 1];
+                array[j + 1] = tem;
+            }
+        }
+    }
+
 }
 #[cfg(test)]
 mod tests {

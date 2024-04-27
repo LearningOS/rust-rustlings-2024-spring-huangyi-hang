@@ -4,7 +4,7 @@
 */
 
 //I AM NOT DONE
-use std::collections::VecDeque;
+use std::collections::{vec_deque, HashSet, VecDeque};
 
 // Define a graph
 struct Graph {
@@ -25,12 +25,31 @@ impl Graph {
         self.adj[dest].push(src); 
     }
 
+
     // Perform a breadth-first search on the graph, return the order of visited nodes
+    // first in first out
+    // push_back pop_front
     fn bfs_with_return(&self, start: usize) -> Vec<usize> {
         
 		//TODO
-
+        let mut Q: VecDeque<usize> = VecDeque::new();
+        let mut visited: HashSet<usize> = HashSet::new();
         let mut visit_order = vec![];
+
+        Q.push_back(start);
+
+        while !Q.is_empty() {
+            let n = Q.pop_front().expect("some node");
+            if !visited.contains(&n) {
+                visit_order.push(n);
+                visited.insert(n);
+            }
+            for i in &self.adj[n] {
+                if !visited.contains(i) {
+                    Q.push_back(*i)
+                }
+            }
+        }
         visit_order
     }
 }

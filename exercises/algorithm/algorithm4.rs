@@ -50,13 +50,23 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        match self.root {
+            None => {
+                self.root = Some(Box::new(TreeNode::new(value)));
+            }
+            Some(ref mut node) => {
+                node.insert(value);
+            }
+        }
+
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        match self.root {
+            None => false,
+            Some(ref node) => node.search(value),
+        }
     }
 }
 
@@ -66,7 +76,43 @@ where
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        if value == self.value {
+            return ;
+        }
+        if value < self.value {
+            if let Some(ref mut left) = self.left {
+                left.insert(value);
+            } else {
+                self.left = Some(Box::new(TreeNode::new(value)));
+            }
+        } else {
+            if let Some(ref mut right) = self.right {
+                right.insert(value);
+            } else {
+                self.right = Some(Box::new(TreeNode::new(value)));
+            }
+        }
+    }
+
+    // Search from a node.
+    fn search(&self, value: T) -> bool {
+        if value == self.value {
+            return true;
+        }
+        if value < self.value {
+            if let Some(ref left) = self.left {
+                return left.search(value);
+            } else {
+                return false;
+            } 
+        } else {
+            if let Some(ref right) = self.right {
+                return right.search(value);
+            } else {
+                return false;
+            } 
+
+        }
     }
 }
 
@@ -74,6 +120,18 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_one_insert() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(1);
+    }
+    #[test]
+    fn test_two_insert() {
+        let mut bst = BinarySearchTree::new();
+        bst.insert(1);
+        bst.insert(2);
+    }
 
     #[test]
     fn test_insert_and_search() {

@@ -4,6 +4,8 @@
 */
 // I AM NOT DONE
 
+use std::vec;
+
 #[derive(Debug)]
 pub struct Queue<T> {
     elements: Vec<T>,
@@ -55,6 +57,7 @@ impl<T> Default for Queue<T> {
 pub struct myStack<T>
 {
 	//TODO
+    size: usize,
 	q1:Queue<T>,
 	q2:Queue<T>
 }
@@ -62,20 +65,49 @@ impl<T> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
+            size: 0,
 			q1:Queue::<T>::new(),
 			q2:Queue::<T>::new()
         }
     }
     pub fn push(&mut self, elem: T) {
-        //TODO
+        self.q1.enqueue(elem);
+        self.size += 1;
     }
     pub fn pop(&mut self) -> Result<T, &str> {
-        //TODO
-		Err("Stack is empty")
+        if self.q1.is_empty() {
+            if self.q2.is_empty() {
+                return Err("Stack is empty");
+            } else {
+                self.size -= 1;
+                return self.q2.dequeue();
+            }
+        } else {
+            let mut v: Vec<T> = Vec::new();
+
+            // move item from old q2 to v.
+            while let Ok(item)  = self.q2.dequeue() {
+                v.push(item);
+            }
+
+            while let Ok(item) = self.q1.dequeue() {
+                v.push(item);
+            }
+
+            while let Some(item) = v.pop() {
+                self.q2.enqueue(item);
+            }
+        }
+        self.size -= 1;
+        self.q2.dequeue()
+            
     }
     pub fn is_empty(&self) -> bool {
-		//TODO
-        true
+        if self.size == 0 {
+            true
+        } else {
+            false
+        }
     }
 }
 

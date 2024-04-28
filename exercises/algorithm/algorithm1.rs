@@ -5,9 +5,8 @@
 // I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
-use std::os::unix::fs::OpenOptionsExt;
 use std::ptr::NonNull;
-use std::vec::*;
+use std::{clone, default, vec::*};
 
 #[derive(Debug)]
 struct Node<T> {
@@ -24,19 +23,19 @@ impl<T> Node<T> {
     }
 }
 #[derive(Debug)]
-struct LinkedList<T> {
+struct LinkedList<T: std::cmp::Ord + Clone> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::Ord + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::Ord + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -66,36 +65,52 @@ impl<T> LinkedList<T> {
             None => None,
             Some(next_ptr) => match index {
                 0 => Some(unsafe { &(*next_ptr.as_ptr()).val }),
-                _ => self.get_ith_node(unsafe { (*(next_ptr.as_ptr())).next }, index - 1),
+                _ => self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, index - 1),
             },
         }
     }
-
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-        let mut v: Vec<&T> = Vec::new();
-        match list_a.start {
-            None => { return list_b; }
-            Some(mut start) => {
-                while start != list_a.end.expect("NonNull end") {
-                    unsafe {
-                        v.push(&(*start.as_ptr()).val);
-                        start = (*start.as_ptr()).next.expect("next");
-                    }
+		//TODO
+        let mut v: Vec<T> = Vec::new();
+
+        let mut a_start = list_a.start;
+
+        while a_start != None {
+            if let Some(ptr) = a_start {
+                unsafe {
+                    let val = &(*ptr.as_ptr()).val;
+                    v.push((*val).clone());
+                    a_start = (*ptr.as_ptr()).next;
                 }
             }
         }
-        let mut list: LinkedList<T> = Default::default();
-        for item in v.into_iter() {
-            list.add(*item);
+
+        let mut b_start = list_b.start;
+
+        while b_start != None {
+            if let Some(ptr) = b_start {
+                unsafe {
+                    let val = &(*ptr.as_ptr()).val;
+                    v.push((*val).clone());
+                    b_start = (*ptr.as_ptr()).next;
+                }
+            }
         }
-        list
+
+        v.sort();
+        let mut new_l: LinkedList<T> = Default::default();
+        for item in v {
+            new_l.add(item);
+        }
+        new_l
+
 	}
 }
 
 impl<T> Display for LinkedList<T>
 where
-    T: Display,
+    T: Display + std::cmp::Ord + Clone,
 {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self.start {

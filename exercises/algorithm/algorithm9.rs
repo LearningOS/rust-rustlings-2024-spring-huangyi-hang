@@ -37,11 +37,40 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut old_idx = self.count;
+        let new_idx = self.shift_up(old_idx);
+
+        // assert
+        //let left_idx = self.left_child_idx(new_idx);
+        //let right_idx = self.right_child_idx(new_idx);
+        //let left_opt = self.items.get(left_idx);
+        //let right_opt= self.items.get(right_idx);
+        //if let Some(left) = left_opt {
+        //    assert!(left < )
+        //}
+
+        //assert!(self.)
     }
 
+    fn shift_up(&mut self, mut idx: usize) -> usize {
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                self.items.swap(idx, parent_idx);
+                idx = parent_idx;
+            } else {
+                break
+            }
+        }
+        idx
+    }
+
+    fn shift_down(&mut self, idx: usize)
+
     fn parent_idx(&self, idx: usize) -> usize {
-        idx / 2
+        idx  / 2
     }
 
     fn children_present(&self, idx: usize) -> bool {
@@ -49,15 +78,26 @@ where
     }
 
     fn left_child_idx(&self, idx: usize) -> usize {
-        idx * 2
+        idx * 2 
     }
 
     fn right_child_idx(&self, idx: usize) -> usize {
         self.left_child_idx(idx) + 1
     }
+    fn peek_idx(&self, idx: usize) -> Option<&T> {
+        if let Some(v) = self.items.get(idx) {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    fn peek(&self) -> Option<&T> {
+        self.peek_idx(0)
+    }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
+        //let height = self.count / 2;
 		0
     }
 }
@@ -84,8 +124,11 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            None
+        } else {
+            //todo
+        }
     }
 }
 
